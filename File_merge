@@ -1,0 +1,57 @@
+"""이 프로그램은 글로우픽 크롤링 프로그램으로 얻은 파일들을 모으는 프로그램입니다."""
+
+import re
+import ujson
+import itertools
+
+print("************************************")
+print("* 파일을 합쳐주는 프로그램 ver1.0  *")
+print("* 배포일 : 19년 8월  ")
+print("\n")
+print("************************************")
+print("\n")
+print("개발자 정인근 imw2008@amorepacific.com")
+
+"""합칠 파일들을을 입력받는 곳"""
+product_lists=int(input("합칠 파일은 총 몇 개인가요? : "))
+global infiles
+infiles=[]
+
+while(product_lists<1 or product_lists>30):
+        product_lists=int(input("다시 입력하세요 :"))
+print("\n")        
+print("이제부터 합칠 파일명을 입력합니다.")
+print("경로를 모두 입력해야 합니다.")
+print('예시 입력 : C:/Users/Public/Downloads/review.jsonl')
+print("\n")
+
+for product_list in range(product_lists):
+    product_list = input("파일명을 입력하세요 : ")
+    infiles.append(product_list)
+        
+print(infiles)
+# infiles=['C:/Users/Public/Downloads/101670_review_ma.jsonl',
+#          'C:/Users/Public/Downloads/93679_review_ma.jsonl'
+#          ]
+
+"""파일명을 입력하는 곳입니다."""
+global output_ma_file
+file = input('출력될 파일명을 입력하세요\n 파일명 예시 : test \n >>')
+output_ma_file = 'C:/Users/Public/Downloads/{}.jsonl'.format(file)
+print("파일이 출력될 주소와 파일명입니다. \n %s" %output_ma_file)
+
+def jsonl_file_merge(infiles, output_ma_file):
+    """각각의 jsonl 파일을 하나로 합쳐주는 함수입니다. infiles로 jsonl 파일 목록을 받으면 output_file 파일을 출력한다."""
+    count=1 #첫파일 라벨링에 해당된다
+
+    with open(output_ma_file, 'w', encoding='utf-8') as output_file: #결과 파일을 utf-8 로 만든다
+        for infile in infiles: #파일들을 하나씩 가져온다.
+            with open(infile, 'r', encoding='utf-8')as ft: # 읽을 때 utf-8로 만든다.
+                for line in ft: #파일 내 텍스트를 한 줄씩 읽는다.
+                    doc=ujson.loads(line) #읽은 줄(line)을 doc 에 저장한다
+                    count+=1 #다음 파일 라벨링에 해당한다.
+                    print(ujson.dumps(doc, ensure_ascii=False), file=output_file, flush=True) #doc 을 결과파일에 저장한다.
+
+    return output_file
+
+jsonl_file_merge(infiles, output_ma_file)
